@@ -1,0 +1,21 @@
+C005 000	jmp 				jump over to [005]
+3000 001 	dw		loadit
+0000 002	...
+0015 003	dw		n 			int n  ~ num lines - 1
+0001 004	one		 
+3003 005	load 	n			acc: n 
+6016 006	sub 	i 			iterator stored after end ~ [016]
+D011 007	jmpe 	xit 		if((n-i) == 0) {goto [011]}
+3001 008	load 	loadit 		acc: 3000
+5016 009	add 	i 				~ 300i
+400B 00A	store 				store 300i in [00B]
+300B 00B	load
+1800 00C	print
+3016 00D	load 	i 			acc: i
+5004 00E 	add 	one 		i ++
+4016 00F	store 	i
+C005 010	jmp 				loop back to [005] ~ load n
+0000 011	...
+3016 012	load 	i 			acc: i		~ 'zero-out' iterator
+6016 013	sub 	i 			i - i
+1800 014	print 				end
