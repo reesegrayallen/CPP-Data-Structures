@@ -1,0 +1,61 @@
+C00C 000			jmp		start		skip around the variables 
+0000 001	i		dw		0			int i 
+0000 002	s 		dw      0           int s (size)
+0000 003	zero 	dw		0 			
+0001 004	one		dw		1			
+4045 005	storeit dw      0			address of a[1] : [045]
+3045 006    loadit  dw      0
+0000 007	a[i]	dw		0			element at index i
+0000 008								
+0000 009	...							leave space for changes
+0000 00A
+0000 00B
+1000 00C	start	readH				input array size			
+4002 00D			store 	s	
+3002 00E			load    s			acc: size
+6001 00F			sub					acc: size - i							[i is initially 0]
+D020 010			jmpe	xit			if ((size - i) == 0) { goto [020] }
+E020 011			jmpl 	xit			if ((size - i) < 0) {goto [020] }
+1000 012			readH				read array element for index i
+4007 013			store	a[i]		a[i] = element we just read				
+3005 014            load 	storeit			                       
+5001 015			add		i           + i		
+4018 016			store 	storeit		at [018]
+3007 017			load    a[i]
+B000 018			nop			
+3001 019			load 	i		
+5004 01A			add 	one			i++
+4001 01B			store 	i
+C00E 01C			jmp 				loop back to load size
+B000 01D	...		nop
+B000 01E			nop
+B000 01F			nop
+3003 020			load 	zero
+4001 021			store 	i 			i:0
+3002 022			load    s 			size
+6001 023			sub 	i 			size - i
+D02F 024			jmpe	xit			if ((size - i) == 0) { goto [02F] }
+E02F 025			jmpl	xit			if ((size - i) < 0) { goto [02F] }
+3006 026			load 	loadit
+5001 027			add		
+4029 028			store
+B000 029			nop
+1800 02A			printH  a[i]		ouput element at index i
+3001 02B			load 	i
+5004 02C 			add 	one			i++
+4001 02D 			store 	i			
+C022 02E 			jmp 				loop back to load size
+3002 02F 			load 	s 			size							
+6004 030			sub 	one 		size - 1
+4001 031			store 	i 			i: s-1
+E03D 032			jmpl 				if (1 < 0) {goto [03D]}
+3006 033			load 	loadit
+5001 034			add 	i					  				
+4036 035 			store  	loadit 			
+B000 036			nop 			
+1800 037			printH	a[i]		output element at index i
+3001 038 			load 	i			acc: i
+6004 039			sub 	one			i - 1
+4001 03A			store 	i			i:i
+C032 03B			jump 				go back to loop		
+0000 03C	end		halt 				terminate		

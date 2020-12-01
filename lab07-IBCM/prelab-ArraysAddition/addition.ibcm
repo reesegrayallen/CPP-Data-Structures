@@ -1,0 +1,29 @@
+C00A 000 jmp	 skip around the variables (start)
+0003 001 dw      int a
+0000 002 dw      int b
+0000 003 dw      int c
+0000 004
+0000 005	     leave space for changes
+0000 006
+0000 007
+0000 008
+0000 009
+1000 00A readH   input a 
+4001 00B store   acc: a
+1000 00C readH   input b
+4002 00D store   acc: b
+1000 00E readH   input c
+4003 00F store   acc: c
+3001 010 load    a: acc
+5002 011 add     a + b: acc
+5003 012 add     ... + c: acc
+1800 013 printH  output acc (sum)
+D016 014 jmpe    if acc: 0 -> goto [016]
+C00A 015 jmp     goto [00A]  (start input over)
+3001 016 load	 a: acc
+1800 017 printH	 output acc (a)
+3002 018 load    b: acc
+1800 019 printH  output acc (b)
+3003 01A load    c: acc
+1800 01B printH  output acc (c)
+0000 01C halt    terminate program (end)
