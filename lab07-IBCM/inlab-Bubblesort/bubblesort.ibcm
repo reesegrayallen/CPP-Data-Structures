@@ -1,0 +1,111 @@
+C00E 000	jmp				skip around the variables 
+0000 001	dw		i
+0000 002	dw		j
+000A 003	dw		s 			max = 10 ~ 0A, array 'size' = 10
+0000 004	dw		zero
+0001 005	dw		one
+4075 006	store	storeit		 	~ a[0] at address [05A]
+3075 007	load	loadit
+0000 008	dw 		a[i]		element at index i
+0000 009	dw 		a[j] 		
+0000 00A 	dw 		a[j-1]		
+0000 00B	dw 		temp		used in sort ~ temp = a[j]
+0000 00C
+0000 00D 					space for changes
+B000 00E	start
+B000 00F	nop		... 		*** READ IN ARRAY *** 	code to free mem after prog end
+3003 010	load 	s 			acc: s (max)
+6001 011 	sub 	i 			max - i
+D020 012	jmpe	xit			if ((s - i) == 0) { goto [020]}	 -- really only need this one
+B000 013 	nop 	...			
+1000 014	readH  				input element for a[i]
+4008 015	store 	a[i] 		store input in variable
+3006 016	load 	storeit 	instructions 
+5001 017	add 	i 	 		..60 (base) + i 
+401A 018	store 	storeit 	[1A] : instructions 
+3008 019	load 	a[i] 		acc: a[i]
+B000 01A	nop 	storeit		
+3001 01B	load 	i 			acc: i
+5005 01C	add 	one 		i ++
+4001 01D	store 	i 			i : i+1
+C010 01E 	jmp   				loop back to load max s
+B000 01F	nop		...			
+B000 020	nop		...					~ terminate input loop
+3004 021	load 	zero	
+4001 022	store 	i 			i : 0 		reset i to zero
+B000 023	nop		...			*** BUBBLESORT ***
+C029 024 	jmp 				jump over to [029] 					
+3001 025 	load 	i  			acc: i
+5005 026	add 	one 		i ++					skip
+4001 027	store 	i 								~ outer i loop
+B000 028	nop 	...
+3001 029 	load 	i 			acc: i						
+6003 02A 	sub 	s 			i - max (10 ~ 0A)
+D05D 02B    jmpe 	xit 		if ((i - s) == 0){ goto [05D]} 		 												
+3003 02C 	load 	s
+6005 02D 	sub 	one 		max - 1
+4002 02E    store   j 			j: max - 1
+B000 02F	nop 	...
+B000 030	nop 	...
+3002 031	load 	j 			acc: j 				~ nested j loop
+6001 032 	sub 	i 			j - i	
+D025 033	jmpe 	xit 		if((i - j) == 0){ goto [025]} 	jump to load i (outer loop)
+3007 034 	load 	loadit
+5002 035 	add 	j
+4037 036	store 	loadit 		instructions							
+B000 037	nop 	loadit
+B000 038	nop 	...
+4009 039	store 	a[j] 		load -> acc: a[j] (store)
+B000 03A	nop 	...
+3007 03B	load 	loadit
+5002 03C 	add 	j
+6005 03D	sub 	1	 		loadit (30[XY]) + j - 1
+403F 03E	store 	loadit
+B000 03F 	nop 	loadit
+400A 040	store 	a[j-1]		load -> acc: a[j-1] (store)
+B000 041 	nop 	...
+B000 042	nop 	...			~ variables a[j] , a[j-1]
+3009 043	load 	a[j]		acc: a[j]
+600A 044	sub 	a[j-1] 		a[j] - a[j-1]
+E04A 045	jmpl 	xit 		if((a[j] - a[j-1]) < 0){goto[04A]}			
+3002 046	load 	j 			acc: j
+6005 047	sub 	one 		j--
+4002 048 	store 	j 
+C030 049	jmp 				loop back to [030] start of nested j loop -> load j
+3009 04A	load 	a[j]
+400B 04B	store 	temp		~ temp = a[j]
+3006 04C	load 	storeit
+5002 04D 	add 	j
+4050 04E	store
+300A 04F	load 	a[j-1]
+B000 050	nop 	storeit
+B000 051	nop 	...
+3006 052	load 	storeit
+5002 053	add 	j
+6005 054	sub 	one
+4057 055	store 	storeit  	store -> 40[XY] + j - 1
+300B 056	load 	temp
+B000 057	nop 	storeit
+B000 058	nop		...
+3002 059	load 	j
+6005 05A	sub 	one 		j--
+4002 05B	store 	j 			j: j-1
+C030 05C	jmp 				loop back to [030]
+B000 05D	nop				end
+B000 05E						*** PRINT SORTED ARRAY ***
+3004 05F	load 	zero
+4001 060	store 	i 			i:0
+3003 061	load 	s
+6001 062	sub 	i
+D06E 063	jmpe	xit 		if((s - i) == 0) { goto [06E]}
+E06E 064 	jmpl 	xit			if((s - i) < 0) { goto [06E]}
+3007 065	load 	loadit
+5001 066 	add 	i
+4068 067 	store 	loadit
+B000 068 	nop
+1800 069	printH				output element 
+3001 06A	load 	i
+5005 06B	add 	one
+4001 06C 	store 	i
+C061 06D	jmp 				loop back to load s
+0000 06E 	halt				terminate program
